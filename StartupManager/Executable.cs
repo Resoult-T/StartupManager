@@ -31,7 +31,7 @@ namespace StartupManager
 
             set
             {
-                _pathToExe = Path.GetFullPath(value);
+                _pathToExe = value;
                 Name = Path.GetFileNameWithoutExtension(value);
             }
         }

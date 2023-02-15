@@ -14,7 +14,7 @@ namespace StartupManager
     {
         //################# Singelton design pettern ###################
         // When an instance is created the saved objects will be automaticly loaded
-        private ExecutableManager() { Load(); }
+        private ExecutableManager() { Executables = new List<Executable>(); Load();  }
 
         private static ExecutableManager _instance;
         // Thread save implementation using Lock
@@ -50,8 +50,10 @@ namespace StartupManager
 
         public void AddExe(params Executable[] executables)
         {
+            
             var existingPaths = from exe in Executables
-                                 select exe.PathToExe;
+                                select exe.PathToExe;
+            
 
             foreach (var executable in executables)
             {
@@ -85,6 +87,17 @@ namespace StartupManager
         public void RemoveExe(Executable exe)
         {
             Executables.Remove(exe);
+        }
+
+        /// <summary>
+        /// Starts every Program within the ExecutableManager
+        /// </summary>
+        public void PerformStart()
+        {
+            foreach (Executable exe in Executables)
+            {
+                exe.Run();
+            }
         }
 
 
