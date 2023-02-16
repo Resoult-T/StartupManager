@@ -26,6 +26,8 @@ namespace StartupManager
             InitializeComponent();
 
             var exeManager = ExecutableManager.Instance();
+
+
         }
     }
 }

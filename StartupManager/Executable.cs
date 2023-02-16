@@ -84,8 +84,10 @@ namespace StartupManager
                 {
                     process.StartInfo.FileName = PathToExe;
                     process.StartInfo.Arguments = Arguments;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardInput = false;
+                    process.StartInfo.RedirectStandardOutput = false;
+                    process.StartInfo.RedirectStandardError = false;
+                    process.StartInfo.UseShellExecute = true;
                     process.StartInfo.WindowStyle = WindowStyle;
                     process.StartInfo.CreateNoWindow = false;
                     process.Start();
@@ -95,7 +97,7 @@ namespace StartupManager
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                return false;   
+                return false;
             }
             return true;
         }
