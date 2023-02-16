@@ -6,11 +6,12 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Runtime.Remoting.Lifetime;
 
 namespace StartupManager
 {
     [Serializable]
-    internal class Executable
+    class Executable
     {
         /// <summary>
         /// A unique id for this instace
@@ -91,6 +92,7 @@ namespace StartupManager
                     process.StartInfo.WindowStyle = WindowStyle;
                     process.StartInfo.CreateNoWindow = false;
                     process.Start();
+
                 }
 
             }

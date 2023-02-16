@@ -10,11 +10,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace StartupManager
 {
-    internal sealed class ExecutableManager
+    sealed class ExecutableManager
     {
         //################# Singelton design pettern ###################
         // When an instance is created the saved objects will be automaticly loaded
-        private ExecutableManager() { Executables = new List<Executable>(); Load();  }
+        private ExecutableManager() { Executables = new List<Executable>(); Load(); }
 
         private static ExecutableManager _instance;
         // Thread save implementation using Lock
@@ -50,10 +50,10 @@ namespace StartupManager
 
         public void AddExe(params Executable[] executables)
         {
-            
+
             var existingPaths = from exe in Executables
                                 select exe.PathToExe;
-            
+
 
             foreach (var executable in executables)
             {
