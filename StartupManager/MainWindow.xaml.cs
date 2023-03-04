@@ -27,13 +27,7 @@ namespace StartupManager
 
             var exeManager = ExecutableManager.Instance();
 
-            exeManager.RemoveExe("C:\\Users\\tkock\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Discord Inc\\Discord.lnk");
-
-            exeManager.AddExe(
-                new Executable("C:\\Users\\tkock\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Discord Inc\\Discord.lnk", null, ProcessWindowStyle.Minimized, 1, false)
-                );
-
-            exeManager.PerformStart();
+            WindowManager.MoveAndResizeWindowByProcessName("notepad", 40, 40, 500, 500);
 
         }
     }

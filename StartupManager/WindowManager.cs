@@ -114,7 +114,7 @@ namespace StartupManager
             IntPtr hWnd = getMainWindowHandle(processes);
 
             // Set the MainWindowHandle to the specified mode
-            SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+            SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW);
             
         }
 

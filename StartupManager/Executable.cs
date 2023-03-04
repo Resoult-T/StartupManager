@@ -38,15 +38,12 @@ namespace StartupManager
             }
         }
 
+        /// <summary>
+        /// Aditional arguments that will be parsed on program start.
+        /// </summary>
         public string? Arguments { get; set; }
 
-        public ProcessWindowStyle WindowStyle { get; set; }
-
-        /// <summary>
-        /// Is the number of windows that will be skipped before the window style is applied
-        /// </summary>
-        public uint SkipAmountOfWindows { get; set; }
-        public bool StyleSkipedWindows { get; set; }
+        public ExecutableSettings Settings { get; set; }
 
         /// <summary>
         /// Creates an object representation of an executable programm.
@@ -59,9 +56,7 @@ namespace StartupManager
             Id = GetNextId();
             PathToExe = path;
             Arguments = arguments;
-            WindowStyle = ProcessWindowStyle.Normal;
-            SkipAmountOfWindows = 0;
-            StyleSkipedWindows = false;
+            Settings = new ExecutableSettings();
         }
 
 
@@ -71,15 +66,13 @@ namespace StartupManager
         /// </summary>
         /// <param name="path">The path to the executable</param>
         /// <param name="arguments">Additional start arguments that will be parsed to the executable</param>
-        /// <param name="windowStyle">The style with which the program is started</param>
-        public Executable(string path, string? arguments, ProcessWindowStyle windowStyle, uint skipAmountOfWindow, bool styleSkipedWindows)
+        /// <param name="settings">An ExecutableSettings object that defince additional settings</param>
+        public Executable(string path, string? arguments, ExecutableSettings settings)
         {
             Id = GetNextId();
             PathToExe = path;
             Arguments = arguments;
-            WindowStyle = windowStyle;
-            SkipAmountOfWindows = skipAmountOfWindow;
-            StyleSkipedWindows = styleSkipedWindows;
+            Settings = settings;
         }
 
 
@@ -100,13 +93,13 @@ namespace StartupManager
                     process.StartInfo.RedirectStandardOutput = false;
                     process.StartInfo.RedirectStandardError = false;
                     process.StartInfo.UseShellExecute = true;
-                    process.StartInfo.WindowStyle = WindowStyle;
+                    process.StartInfo.WindowStyle = Settings.WindowStyle;
                     process.StartInfo.CreateNoWindow = false;
                     process.Start();
                 }
 
                 // Successively try to style th window
-                WindowManager.WaitForWindowAndStyle(Name, WindowStyle, SkipAmountOfWindows, StyleSkipedWindows);
+                WindowManager.WaitForWindowAndStyle(Name, Settings);
 
             }
             catch (Exception ex)
