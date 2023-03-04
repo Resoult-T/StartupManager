@@ -2,6 +2,13 @@
 using System.Diagnostics;
 using System.Dynamic;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Linq;
+using System.Diagnostics.Contracts;
+using System.Windows.Documents;
+using System.Collections.Generic;
+using System.Security.RightsManagement;
+using System.Threading;
 
 namespace StartupManager
 {
@@ -15,10 +22,38 @@ namespace StartupManager
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
         static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+        /// <summary>
+        /// Returns the First MainWindowHandle that is found. If there was no MainWindowHandle it will return IntPtr.Zero
+        /// </summary>
+        /// <param name="processes">An Array of Processes to search for a mainWindowHandle</param>
+        /// <returns>IntPtr to a MainWindowHandle</returns>
+        private static IntPtr getMainWindowHandle(Process[] processes)
+        {
+            IntPtr returnValue = IntPtr.Zero;
+
+            foreach (Process process in processes)
+            {
+                // Get the mainWindowHandle
+                IntPtr hWnd = process.MainWindowHandle;
+                if (hWnd == IntPtr.Zero)
+                    continue; // Process dose not have a window handle
+
+                // In case it is not IntPtr.Zero it will be the returnValue
+                returnValue = hWnd;
+                break;
+            }
+
+            // [Debugging] Show if the return value is still IntPtr.Zero
+            if (returnValue == IntPtr.Zero)
+                MessageBox.Show("None of the specified processes had a mainWindowHandle");
+
+            return returnValue;
+        }
 
         // Flags for ShowWindow methode
         const int SW_HIDE = 0;
@@ -29,10 +64,10 @@ namespace StartupManager
         /// <summary>
         /// Can be used to modify the window show behavior after a process is run.
         /// </summary>
-        /// <param name="processName">The name of teh Process to be modified</param>
-        /// <param name="show">A bool that represents if it should be whown or hide</param>
+        /// <param name="processName">The name of the Process to be modified</param>
+        /// <param name="show">A bool that represents if it should be show or hide</param>
         /// <exception cref="ArgumentException">If the Process name isnt in running processes</exception>
-        public static void ShowWindowByProcessName(string processName, bool show)
+        public static void StyleWindowByProcessName(string processName, ProcessWindowStyle style)
         {
             // Get the process by name
             Process[] processes = Process.GetProcessesByName(processName);
@@ -42,16 +77,11 @@ namespace StartupManager
             }
 
             // Find the main window handler
-            foreach (Process process in processes)
-            {
-                IntPtr hWnd = process.MainWindowHandle;
-                if (hWnd == IntPtr.Zero)
-                {
-                    continue;  // Process does not have a main window
-                }
+            IntPtr hWnd = getMainWindowHandle(processes);
 
-                ShowWindow(hWnd, show ? SW_SHOWNORMAL : SW_SHOWMINIMIZED);
-            }
+            // Set the MainWindowHandle to the specified mode
+            ShowWindow(hWnd, GetStyleFlag(style));
+            
         }
 
 
@@ -80,17 +110,86 @@ namespace StartupManager
                 throw new ArgumentException($"Process with name '{processName}' not found");
             }
 
-            // Find the mein Window
-            foreach (Process process in processes)
+            // Find the main window handler
+            IntPtr hWnd = getMainWindowHandle(processes);
+
+            // Set the MainWindowHandle to the specified mode
+            SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+            
+        }
+
+        /// <summary>
+        /// Waits until the wanted mainWondowHandle was detected ans then aplies the styling
+        /// </summary>
+        /// <param name="skipAmountOfWindows">The amount of matches that will be skiped</param>
+        /// <param name="processName">The name to search in Processes</param>
+        internal static void WaitForWindowAndStyle(string processName, ProcessWindowStyle style, uint skipAmountOfWindows, bool stylePrevious)
+        {
+            IntPtr mainWindow = IntPtr.Zero;
+
+            // A list of all matches found
+            List<IntPtr> ignoredWindows = new List<IntPtr>();
+
+            // While no mailWindowHandle was fount or the amount of already found mainWindowHandle is below the skiped value...
+            while (mainWindow == IntPtr.Zero || ignoredWindows.Count <= skipAmountOfWindows)
             {
-                IntPtr hWnd = process.MainWindowHandle;
-                if (hWnd == IntPtr.Zero)
+                // Get all current processes
+                Process[] processes = Process.GetProcesses();
+
+                // Select all processes that matches the procesName case insensitive
+                var thisProcess = from process in processes
+                                  where process.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)
+                                  select process;
+
+                foreach (var process in thisProcess )
                 {
-                    continue;  // process does not have a main window
+                    IntPtr hWnd = process.MainWindowHandle;
+                    // Continue if the current process does not have a mainWindowHandle
+                    if (hWnd == IntPtr.Zero)
+                        continue;
+                    // Continue if the current handle was already found
+                    else if (ignoredWindows.Contains(hWnd))
+                        continue;
+
+                    // Style this window if enabled
+                    if (stylePrevious)
+                        ShowWindow(hWnd, GetStyleFlag(style));
+
+                    mainWindow = hWnd;
+                    ignoredWindows.Add(hWnd);
                 }
 
-                SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+                Thread.Sleep(10);
             }
+
+            // This check is to prevent multiple calls of ShowWindow to the same windowHandle
+            if (!stylePrevious)
+                ShowWindow(mainWindow, GetStyleFlag(style));
+        }
+
+        /// <summary>
+        /// Gets the style flag to pars it to ShowWindow function of user32.dll
+        /// </summary>
+        /// <param name="style">Window Style</param>
+        /// <returns>An integer representation of the parsed style</returns>
+        private static int GetStyleFlag(ProcessWindowStyle style)
+        {
+            switch (style)
+            {
+                case ProcessWindowStyle.Hidden:
+                    return SW_HIDE;
+
+                case ProcessWindowStyle.Normal:
+                    return SW_SHOWNORMAL;
+
+                case ProcessWindowStyle.Minimized:
+                    return SW_SHOWMINIMIZED;
+
+                case ProcessWindowStyle.Maximized:
+                    return SW_SHOWMAXIMIZED;
+            }
+
+            return SW_SHOWNORMAL;
         }
     }
 }

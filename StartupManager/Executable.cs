@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Runtime.Remoting.Lifetime;
+using System.Threading;
 
 namespace StartupManager
 {
@@ -42,6 +43,12 @@ namespace StartupManager
         public ProcessWindowStyle WindowStyle { get; set; }
 
         /// <summary>
+        /// Is the number of windows that will be skipped before the window style is applied
+        /// </summary>
+        public uint SkipAmountOfWindows { get; set; }
+        public bool StyleSkipedWindows { get; set; }
+
+        /// <summary>
         /// Creates an object representation of an executable programm.
         /// Argumenrts are optional
         /// </summary>
@@ -53,6 +60,8 @@ namespace StartupManager
             PathToExe = path;
             Arguments = arguments;
             WindowStyle = ProcessWindowStyle.Normal;
+            SkipAmountOfWindows = 0;
+            StyleSkipedWindows = false;
         }
 
 
@@ -63,12 +72,14 @@ namespace StartupManager
         /// <param name="path">The path to the executable</param>
         /// <param name="arguments">Additional start arguments that will be parsed to the executable</param>
         /// <param name="windowStyle">The style with which the program is started</param>
-        public Executable(string path, string? arguments, ProcessWindowStyle windowStyle)
+        public Executable(string path, string? arguments, ProcessWindowStyle windowStyle, uint skipAmountOfWindow, bool styleSkipedWindows)
         {
             Id = GetNextId();
             PathToExe = path;
             Arguments = arguments;
             WindowStyle = windowStyle;
+            SkipAmountOfWindows = skipAmountOfWindow;
+            StyleSkipedWindows = styleSkipedWindows;
         }
 
 
@@ -92,8 +103,10 @@ namespace StartupManager
                     process.StartInfo.WindowStyle = WindowStyle;
                     process.StartInfo.CreateNoWindow = false;
                     process.Start();
-
                 }
+
+                // Successively try to style th window
+                WindowManager.WaitForWindowAndStyle(Name, WindowStyle, SkipAmountOfWindows, StyleSkipedWindows);
 
             }
             catch (Exception ex)
