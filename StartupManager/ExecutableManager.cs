@@ -7,10 +7,14 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections;
 
 namespace StartupManager
 {
-    sealed class ExecutableManager
+    /// <summary>
+    /// Provides tools to handle object of type Executable. 
+    /// </summary>
+    sealed class ExecutableManager : IEnumerable<Executable>
     {
         //################# Singelton design pettern ###################
         // When an instance is created the saved objects will be automaticly loaded
@@ -21,7 +25,7 @@ namespace StartupManager
         private static readonly object _lock = new object();
 
         /// <summary>
-        /// Creates an instace if it not already exists
+        /// Creates an instace if it not already exists.
         /// </summary>
         /// <returns>Object instance</returns>
         public static ExecutableManager Instance()
@@ -44,7 +48,7 @@ namespace StartupManager
         private string _savedExecutablePath = "executable.smso";
 
         /// <summary>
-        /// This list contains all executables that will be runned on Startup
+        /// This list contains all executables that will be runned on Startup.
         /// </summary>
         public List<Executable> Executables { get; private set; }
 
@@ -63,7 +67,7 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Remove an Executable by id
+        /// Remove an Executable by id.
         /// </summary>
         /// <param name="id">The id of an Executable object</param>
         public void RemoveExe(int id)
@@ -72,7 +76,7 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Remove an Executable by path
+        /// Remove an Executable by path.
         /// </summary>
         /// <param name="path">Path to the executable</param>
         public void RemoveExe(string path)
@@ -81,7 +85,7 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Remove an Executable by object
+        /// Remove an Executable by object.
         /// </summary>
         /// <param name="exe">Executable that should be remove</param>
         public void RemoveExe(Executable exe)
@@ -90,7 +94,7 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Starts every Program within the ExecutableManager
+        /// Starts every Program within the ExecutableManager.
         /// </summary>
         public void PerformStart()
         {
@@ -102,7 +106,7 @@ namespace StartupManager
 
 
         /// <summary>
-        /// Load saved executable settings
+        /// Load saved executable settings.
         /// </summary>
         private void Load()
         {
@@ -122,7 +126,7 @@ namespace StartupManager
 
         /// <summary>
         /// Saves all executable objects added to the manager.
-        /// This methode will be called automaticly when this instance is out of scope. Normaly there is not need to call this methode manualy
+        /// This methode will be called automaticly when this instance is out of scope. Normaly there is not need to call this methode manualy.
         /// </summary>
         public void Save()
         {
@@ -145,13 +149,21 @@ namespace StartupManager
             {
                 classString +=
                     $"Id: --------- {exe.Id}\n" +
-                    $"Name: ------- {exe.Name}\n" +
-                    $"Arguments: -- {exe.Arguments}\n" +
-                    $"Style: ------ {exe.WindowStyle}\n";
+                    $"Name: ------- {exe.Name}\n";
 
             }
 
             return classString;
+        }
+
+        public IEnumerator<Executable> GetEnumerator()
+        {
+            return ((IEnumerable<Executable>)Executables).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Executables).GetEnumerator();
         }
 
         ~ExecutableManager()

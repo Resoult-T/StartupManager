@@ -11,21 +11,24 @@ using System.Threading;
 
 namespace StartupManager
 {
+    /// <summary>
+    /// Contains all information needed to launch a program with a certain behavior.
+    /// </summary>
     [Serializable]
     class Executable
     {
         /// <summary>
-        /// A unique id for this instace
+        /// A unique id for this instace.
         /// </summary>
         public int Id { get; private set; }
         /// <summary>
-        /// Represents the file name without extension
+        /// Represents the file name without extension.
         /// </summary>
         public string Name { get; private set; }
 
         private string _pathToExe;
         /// <summary>
-        /// Will Set the Path and the name will be sett to the filename without extension automaticly
+        /// Will Set the Path and the name will be sett to the filename without extension automaticly.
         /// </summary>
         public string PathToExe
         {
@@ -78,7 +81,7 @@ namespace StartupManager
 
 
         /// <summary>
-        /// Will run the executable with the specified parameterss
+        /// Will run the executable with the specified parameterss.
         /// </summary>
         /// <returns>A bool which will show if the program start was executed</returns>
         public bool Run()
@@ -97,9 +100,12 @@ namespace StartupManager
                     process.StartInfo.CreateNoWindow = false;
                     process.Start();
                 }
+                if (Settings.AdvancedHandling)
+                {
+                    // Successively try to style th window
+                    WindowManager.WaitForWindowAndStyle(Name, Settings);
+                }
 
-                // Successively try to style th window
-                WindowManager.WaitForWindowAndStyle(Name, Settings);
 
             }
             catch (Exception ex)
@@ -114,7 +120,7 @@ namespace StartupManager
         public static int nextId = 1;
 
         /// <summary>
-        /// Will create an id for a new instace
+        /// Updates the nextId each time a new instance was created.
         /// </summary>
         /// <returns>Unique id</returns>
         private int GetNextId()

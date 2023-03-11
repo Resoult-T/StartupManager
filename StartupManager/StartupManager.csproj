@@ -59,6 +59,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -78,7 +80,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ExecutableSettings.cs" />
+    <Compile Include="MonitorInfo.cs" />
+    <Compile Include="VirtualScreenHelper.cs" />
     <Compile Include="WindowManager.cs" />
+    <Compile Include="WindowPlacementData.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

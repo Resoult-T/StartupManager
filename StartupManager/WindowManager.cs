@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Drawing;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using System.Windows.Documents;
@@ -14,7 +15,7 @@ namespace StartupManager
 {
 
     /// <summary>
-    /// Make additionaly changes to Programs using windows api
+    /// Make additionaly changes to Programs using windows APIs.
     /// </summary>
     static class WindowManager
     {
@@ -25,10 +26,10 @@ namespace StartupManager
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
-        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
         /// <summary>
-        /// Returns the First MainWindowHandle that is found. If there was no MainWindowHandle it will return IntPtr.Zero
+        /// Returns the First MainWindowHandle that is found. If there was no MainWindowHandle it will return IntPtr.Zero.
         /// </summary>
         /// <param name="processes">An Array of Processes to search for a mainWindowHandle</param>
         /// <returns>IntPtr to a MainWindowHandle</returns>
@@ -90,10 +91,13 @@ namespace StartupManager
         const uint SWP_NOSIZE = 0x0001;
         const uint SWP_NOMOVE = 0x0002;
         const uint SWP_SHOWWINDOW = 0x0040;
+        const uint SWP_NOOWNERZORDER = 0x0200;
+        const uint SWP_NOREDRAW = 0x0008;
+        const uint SWP_NOZORDER = 0x0004;
 
         /// <summary>
         /// Can be used to change the size and position of a running process window.
-        /// The top left corner of a window will be at the specified position
+        /// The top left corner of a window will be at the specified position.
         /// </summary>
         /// <param name="processName">The name of the process to modify</param>
         /// <param name="x">Window Position x as pixels starting from top</param>
@@ -114,16 +118,16 @@ namespace StartupManager
             IntPtr hWnd = getMainWindowHandle(processes);
 
             // Set the MainWindowHandle to the specified mode
-            SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW);
+            SetWindowPos(hWnd, HWND_TOP, x, y, cx, cy, SWP_SHOWWINDOW | SWP_NOOWNERZORDER);
             
         }
 
         /// <summary>
-        /// Waits until the wanted mainWondowHandle was detected ans then aplies the styling
+        /// Waits until the wanted mainWondowHandle was detected ans then aplies the styling.
         /// </summary>
         /// <param name="skipAmountOfWindows">The amount of matches that will be skiped</param>
         /// <param name="processName">The name to search in Processes</param>
-        internal static void WaitForWindowAndStyle(string processName, ProcessWindowStyle style, uint skipAmountOfWindows, bool stylePrevious)
+        internal static void WaitForWindowAndStyle(string processName, ExecutableSettings settings)
         {
             IntPtr mainWindow = IntPtr.Zero;
 
@@ -131,7 +135,7 @@ namespace StartupManager
             List<IntPtr> ignoredWindows = new List<IntPtr>();
 
             // While no mailWindowHandle was fount or the amount of already found mainWindowHandle is below the skiped value...
-            while (mainWindow == IntPtr.Zero || ignoredWindows.Count <= skipAmountOfWindows)
+            while (mainWindow == IntPtr.Zero || ignoredWindows.Count <= settings.SkipAmountOfWindows)
             {
                 // Get all current processes
                 Process[] processes = Process.GetProcesses();
@@ -152,8 +156,8 @@ namespace StartupManager
                         continue;
 
                     // Style this window if enabled
-                    if (stylePrevious)
-                        ShowWindow(hWnd, GetStyleFlag(style));
+                    if (settings.StyleSkipedWindows)
+                        ShowWindow(hWnd, GetStyleFlag(settings.WindowStyle));
 
                     mainWindow = hWnd;
                     ignoredWindows.Add(hWnd);
@@ -163,12 +167,17 @@ namespace StartupManager
             }
 
             // This check is to prevent multiple calls of ShowWindow to the same windowHandle
-            if (!stylePrevious)
-                ShowWindow(mainWindow, GetStyleFlag(style));
+            if (!settings.StyleSkipedWindows)
+                ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
+
+
+            SetWindowPos(mainWindow, HWND_TOP, 
+                (int)settings.PlacementData.VirtualWindowPosition.X, (int)settings.PlacementData.VirtualWindowPosition.Y,
+                settings.PlacementData.CX, settings.PlacementData.CY, SWP_NOZORDER);
         }
 
         /// <summary>
-        /// Gets the style flag to pars it to ShowWindow function of user32.dll
+        /// Gets the style flag to pars it to ShowWindow function of user32.dll.
         /// </summary>
         /// <param name="style">Window Style</param>
         /// <returns>An integer representation of the parsed style</returns>

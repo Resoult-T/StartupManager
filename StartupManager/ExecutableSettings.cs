@@ -7,17 +7,16 @@ using System.Threading.Tasks;
 
 namespace StartupManager
 {
+    /// <summary>
+    /// Contains all setings for an object type of Executable which are not relatit spezific to an Executable Object and can be reused for others.
+    /// </summary>
+    [Serializable]
     internal class ExecutableSettings
     {
         /// <summary>
         /// A name to identify this preset
         /// </summary>
         public string? Name { get; set; }
-
-        /// <summary>
-        /// Aditional arguments that will be parsed on program start.
-        /// </summary>
-        public string? Arguments { get; set; }
 
         /// <summary>
         /// Defines the process style in wich the the aplication will be started.
@@ -41,6 +40,11 @@ namespace StartupManager
         /// AdvancedHandling must be set to true.
         /// </summary>
         public bool StyleSkipedWindows { get; set; }
+
+        /// <summary>
+        /// Contains placment data of the window.
+        /// </summary>
+        public WindowPlacementData PlacementData { get; set; }
     
         
 
@@ -50,7 +54,6 @@ namespace StartupManager
         public ExecutableSettings()
         {
             Name = null;
-            Arguments = null;
             WindowStyle = ProcessWindowStyle.Normal;
             AdvancedHandling = false;
             SkipAmountOfWindows = 0;
@@ -62,10 +65,9 @@ namespace StartupManager
         /// </summary>
         /// <param name="arguments">Arguments parsed at aplication start</param>
         /// <param name="windowStyle">Window style</param>
-        public ExecutableSettings(string? name, string? arguments, ProcessWindowStyle windowStyle)
+        public ExecutableSettings(string? name, ProcessWindowStyle windowStyle)
         {
             Name = name;
-            Arguments = arguments;
             WindowStyle = windowStyle;
             AdvancedHandling = false;
             SkipAmountOfWindows = 0;
@@ -80,13 +82,14 @@ namespace StartupManager
         /// <param name="windowStyle">Window style</param>
         /// <param name="skipAmountOfWindows">Windows that will be skiped befor styles are applied</param>
         /// <param name="styleSkipedWindows">Defines if the style should also be set to prior windows</param>
-        public ExecutableSettings(string? name, string? arguments, ProcessWindowStyle windowStyle, uint skipAmountOfWindows, bool styleSkipedWindows)
+        public ExecutableSettings(string? name, ProcessWindowStyle windowStyle, uint skipAmountOfWindows, bool styleSkipedWindows, WindowPlacementData placementData)
         {  
             Name = name;
-            Arguments = arguments;
             WindowStyle = windowStyle;
+            AdvancedHandling = true;
             SkipAmountOfWindows = skipAmountOfWindows;
             StyleSkipedWindows = styleSkipedWindows;
+            PlacementData = placementData;
         }
     }
 }
