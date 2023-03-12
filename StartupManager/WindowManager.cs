@@ -10,6 +10,8 @@ using System.Windows.Documents;
 using System.Collections.Generic;
 using System.Security.RightsManagement;
 using System.Threading;
+using static StartupManager.VirtualScreenHelper;
+using System.Windows.Media.Media3D;
 
 namespace StartupManager
 {
@@ -27,6 +29,12 @@ namespace StartupManager
 
         [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+        [DllImport("user32.dll")]
+        static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+
+        [DllImport("user32.dll")]
+        static extern bool GetClientRect(IntPtr hwnd, out RECT rect);
 
         /// <summary>
         /// Returns the First MainWindowHandle that is found. If there was no MainWindowHandle it will return IntPtr.Zero.
@@ -61,29 +69,6 @@ namespace StartupManager
         const int SW_SHOWNORMAL = 1;
         const int SW_SHOWMINIMIZED = 2;
         const int SW_SHOWMAXIMIZED = 3;
-
-        /// <summary>
-        /// Can be used to modify the window show behavior after a process is run.
-        /// </summary>
-        /// <param name="processName">The name of the Process to be modified</param>
-        /// <param name="show">A bool that represents if it should be show or hide</param>
-        /// <exception cref="ArgumentException">If the Process name isnt in running processes</exception>
-        public static void StyleWindowByProcessName(string processName, ProcessWindowStyle style)
-        {
-            // Get the process by name
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length == 0)
-            {
-                throw new ArgumentException($"Process with name '{processName}' not found");
-            }
-
-            // Find the main window handler
-            IntPtr hWnd = getMainWindowHandle(processes);
-
-            // Set the MainWindowHandle to the specified mode
-            ShowWindow(hWnd, GetStyleFlag(style));
-            
-        }
 
 
         // Flags for SetWindowPos methode
@@ -135,9 +120,7 @@ namespace StartupManager
 
             ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
 
-            SetWindowPos(mainWindow, HWND_TOP, 
-                (int)settings.PlacementData.VirtualWindowPosition.X, (int)settings.PlacementData.VirtualWindowPosition.Y,
-                settings.PlacementData.CX, settings.PlacementData.CY, SWP_NOZORDER);
+            StyleWindow(mainWindow, settings.PlacementData);
         }
 
         private static IntPtr WaitForMainWindowHandl(ref Process process, uint skipAmountOfWindows) 
@@ -149,6 +132,44 @@ namespace StartupManager
 
             return hWnd;
         }
+
+        /// <summary>
+        /// Sets the position and size of a window considering the invisible border of some windows
+        /// </summary>
+        /// <param name="hWnd">MainWindowHandle</param>
+        /// <param name="placementData"></param>
+        private static void StyleWindow(IntPtr hWnd, WindowPlacementData placementData)
+        {
+            // TODO: Get information about the margin/border of this window and substrakt is from the VirtualWindowPosition.
+
+            // Get the window's position and size
+            RECT windowRect = new RECT();
+            GetWindowRect(hWnd, out windowRect);
+
+            // Get the window's client area size
+            RECT clientRect = new RECT();
+            GetClientRect(hWnd, out clientRect);
+
+            // Calculate the size of the window's border
+            int borderWidth = ((windowRect.Right - windowRect.Left) - (clientRect.Right - clientRect.Left));
+            // Correction value to subtract from X positioning value
+            int xCorrection;
+            if (borderWidth > 1)
+                // The correction value results from a single edge width minus 2. The reason for this is unknown
+                xCorrection = (borderWidth/2) - 2;
+            else
+                // If no boder is present, the correction value must not fall below 0
+                xCorrection = 0;
+
+            // Set window position
+            SetWindowPos(hWnd, HWND_TOP,
+                (int)placementData.VirtualWindowPosition.X - xCorrection, 
+                (int)placementData.VirtualWindowPosition.Y,
+                placementData.CX + borderWidth, 
+                placementData.CY + (borderWidth / 2), 
+                SWP_NOZORDER);
+        }
+
 
         /// <summary>
         /// Gets the style flag to pars it to ShowWindow function of user32.dll.
