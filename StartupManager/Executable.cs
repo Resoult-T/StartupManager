@@ -86,10 +86,10 @@ namespace StartupManager
         /// <returns>A bool which will show if the program start was executed</returns>
         public bool Run()
         {
+            var settings = Settings;
+            var process = new Process();
             try
             {
-                var settings = Settings;
-                var process = new Process();
                 process.StartInfo.FileName = PathToExe;
                 process.StartInfo.Arguments = Arguments;
                 process.StartInfo.RedirectStandardInput = false;
@@ -105,15 +105,20 @@ namespace StartupManager
                     // Successively try to style th window
                     WindowManager.WaitForWindowAndStyle(ref process, ref settings);
                 }
-                
-                process.WaitForExit();
-                process.Dispose();
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 return false;
+            }
+            finally
+            {
+                if (!process.HasExited)
+                {
+                    process.WaitForExit();
+                    process.Dispose();
+                }
             }
             return true;
         }
