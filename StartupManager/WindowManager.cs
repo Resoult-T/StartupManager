@@ -1,17 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Drawing;
-using System.Linq;
-using System.Diagnostics.Contracts;
-using System.Windows.Documents;
-using System.Collections.Generic;
-using System.Security.RightsManagement;
-using System.Threading;
 using static StartupManager.VirtualScreenHelper;
-using System.Windows.Media.Media3D;
 
 namespace StartupManager
 {
@@ -117,10 +109,12 @@ namespace StartupManager
             // Wait for Main window handle
             IntPtr mainWindow = WaitForMainWindowHandl(ref process, settings.SkipAmountOfWindows);
 
-
+            // Show window
             ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
 
-            StyleWindow(mainWindow, settings.PlacementData);
+            // Style window when enabled
+            if (settings.CustomPositioning && settings.PlacementData != null)
+                StyleWindow(mainWindow, settings.PlacementData);
         }
 
         private static IntPtr WaitForMainWindowHandl(ref Process process, uint skipAmountOfWindows) 

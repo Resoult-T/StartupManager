@@ -35,19 +35,17 @@ namespace StartupManager
         /// </summary>
         public uint SkipAmountOfWindows { get; set; }
 
-        /// <summary>
-        /// This defines if the prior windows to the main Window that gets modified should also be modified.
-        /// AdvancedHandling must be set to true.
-        /// </summary>
-        public bool StyleSkipedWindows { get; set; }
 
         /// <summary>
         /// Contains placment data of the window.
         /// </summary>
         public WindowPlacementData PlacementData { get; set; }
-    
-        
 
+        /// <summary>
+        /// Enables custom positioning. This Only works when AdwancedHandling is enabled and PlacementData is set.
+        /// </summary>
+        public bool CustomPositioning { get; set; }
+    
         /// <summary>
         /// Default settings applied.
         /// </summary>
@@ -57,7 +55,7 @@ namespace StartupManager
             WindowStyle = ProcessWindowStyle.Normal;
             AdvancedHandling = false;
             SkipAmountOfWindows = 0;
-            StyleSkipedWindows = false;
+            CustomPositioning = false;
         }
 
         /// <summary>
@@ -71,7 +69,7 @@ namespace StartupManager
             WindowStyle = windowStyle;
             AdvancedHandling = false;
             SkipAmountOfWindows = 0;
-            StyleSkipedWindows = false;
+            CustomPositioning = false;
         }
 
         /// <summary>
@@ -82,14 +80,14 @@ namespace StartupManager
         /// <param name="windowStyle">Window style</param>
         /// <param name="skipAmountOfWindows">Windows that will be skiped befor styles are applied</param>
         /// <param name="styleSkipedWindows">Defines if the style should also be set to prior windows</param>
-        public ExecutableSettings(string? name, ProcessWindowStyle windowStyle, uint skipAmountOfWindows, bool styleSkipedWindows, WindowPlacementData placementData)
+        public ExecutableSettings(string? name, ProcessWindowStyle windowStyle, uint skipAmountOfWindows, WindowPlacementData placementData, bool customPositioning)
         {  
             Name = name;
             WindowStyle = windowStyle;
             AdvancedHandling = true;
             SkipAmountOfWindows = skipAmountOfWindows;
-            StyleSkipedWindows = styleSkipedWindows;
             PlacementData = placementData;
+            CustomPositioning = customPositioning;
         }
     }
 }

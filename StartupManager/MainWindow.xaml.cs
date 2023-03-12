@@ -29,7 +29,7 @@ namespace StartupManager
             InitializeComponent();
 
             // Create a Test Setting
-            var settings = new ExecutableSettings("Test", ProcessWindowStyle.Normal, 0, false, new WindowPlacementData(0, 0, 700, 400, 0));
+            var settings = new ExecutableSettings("Test", ProcessWindowStyle.Normal, 0, new WindowPlacementData(0, 0, 700, 400, 0), true);
 
             var exeManager = ExecutableManager.Instance();
 
