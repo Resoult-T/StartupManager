@@ -171,10 +171,21 @@ namespace StartupManager
                 ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
 
 
-            SetWindowPos(mainWindow, HWND_TOP, 
-                (int)settings.PlacementData.VirtualWindowPosition.X, (int)settings.PlacementData.VirtualWindowPosition.Y,
-                settings.PlacementData.CX, settings.PlacementData.CY, SWP_NOZORDER);
+            StyleWindow(mainWindow, settings.PlacementData);
         }
+
+
+        private static void StyleWindow(IntPtr hWnd, WindowPlacementData placementData)
+        {
+            // TODO: Get information about the margin/border of this window and substrakt is from the VirtualWindowPosition.
+
+
+            // Sett window position.
+            SetWindowPos(hWnd, HWND_TOP,
+                (int)placementData.VirtualWindowPosition.X, (int)placementData.VirtualWindowPosition.Y,
+                placementData.CX, placementData.CY, SWP_NOZORDER);
+        }
+
 
         /// <summary>
         /// Gets the style flag to pars it to ShowWindow function of user32.dll.
