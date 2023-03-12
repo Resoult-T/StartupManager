@@ -62,29 +62,6 @@ namespace StartupManager
         const int SW_SHOWMINIMIZED = 2;
         const int SW_SHOWMAXIMIZED = 3;
 
-        /// <summary>
-        /// Can be used to modify the window show behavior after a process is run.
-        /// </summary>
-        /// <param name="processName">The name of the Process to be modified</param>
-        /// <param name="show">A bool that represents if it should be show or hide</param>
-        /// <exception cref="ArgumentException">If the Process name isnt in running processes</exception>
-        public static void StyleWindowByProcessName(string processName, ProcessWindowStyle style)
-        {
-            // Get the process by name
-            Process[] processes = Process.GetProcessesByName(processName);
-            if (processes.Length == 0)
-            {
-                throw new ArgumentException($"Process with name '{processName}' not found");
-            }
-
-            // Find the main window handler
-            IntPtr hWnd = getMainWindowHandle(processes);
-
-            // Set the MainWindowHandle to the specified mode
-            ShowWindow(hWnd, GetStyleFlag(style));
-            
-        }
-
 
         // Flags for SetWindowPos methode
         static readonly IntPtr HWND_TOP = new IntPtr(0);
