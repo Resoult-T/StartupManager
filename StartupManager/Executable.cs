@@ -88,24 +88,26 @@ namespace StartupManager
         {
             try
             {
-                using (var process = new Process())
-                {
-                    process.StartInfo.FileName = PathToExe;
-                    process.StartInfo.Arguments = Arguments;
-                    process.StartInfo.RedirectStandardInput = false;
-                    process.StartInfo.RedirectStandardOutput = false;
-                    process.StartInfo.RedirectStandardError = false;
-                    process.StartInfo.UseShellExecute = true;
-                    process.StartInfo.WindowStyle = Settings.WindowStyle;
-                    process.StartInfo.CreateNoWindow = false;
-                    process.Start();
-                }
+                var settings = Settings;
+                var process = new Process();
+                process.StartInfo.FileName = PathToExe;
+                process.StartInfo.Arguments = Arguments;
+                process.StartInfo.RedirectStandardInput = false;
+                process.StartInfo.RedirectStandardOutput = false;
+                process.StartInfo.RedirectStandardError = false;
+                process.StartInfo.UseShellExecute = true;
+                process.StartInfo.WindowStyle = settings.WindowStyle;
+                process.StartInfo.CreateNoWindow = false;
+                process.Start();
+
                 if (Settings.AdvancedHandling)
                 {
                     // Successively try to style th window
-                    WindowManager.WaitForWindowAndStyle(Name, Settings);
+                    WindowManager.WaitForWindowAndStyle(ref process, ref settings);
                 }
-
+                
+                process.WaitForExit();
+                process.Dispose();
 
             }
             catch (Exception ex)

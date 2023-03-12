@@ -127,53 +127,27 @@ namespace StartupManager
         /// </summary>
         /// <param name="skipAmountOfWindows">The amount of matches that will be skiped</param>
         /// <param name="processName">The name to search in Processes</param>
-        internal static void WaitForWindowAndStyle(string processName, ExecutableSettings settings)
+        internal static void WaitForWindowAndStyle(ref Process process,ref ExecutableSettings settings)
         {
-            IntPtr mainWindow = IntPtr.Zero;
+            // Wait for Main window handle
+            IntPtr mainWindow = WaitForMainWindowHandl(ref process, settings.SkipAmountOfWindows);
 
-            // A list of all matches found
-            List<IntPtr> ignoredWindows = new List<IntPtr>();
 
-            // While no mailWindowHandle was fount or the amount of already found mainWindowHandle is below the skiped value...
-            while (mainWindow == IntPtr.Zero || ignoredWindows.Count <= settings.SkipAmountOfWindows)
-            {
-                // Get all current processes
-                Process[] processes = Process.GetProcesses();
-
-                // Select all processes that matches the procesName case insensitive
-                var thisProcess = from process in processes
-                                  where process.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)
-                                  select process;
-
-                foreach (var process in thisProcess )
-                {
-                    IntPtr hWnd = process.MainWindowHandle;
-                    // Continue if the current process does not have a mainWindowHandle
-                    if (hWnd == IntPtr.Zero)
-                        continue;
-                    // Continue if the current handle was already found
-                    else if (ignoredWindows.Contains(hWnd))
-                        continue;
-
-                    // Style this window if enabled
-                    if (settings.StyleSkipedWindows)
-                        ShowWindow(hWnd, GetStyleFlag(settings.WindowStyle));
-
-                    mainWindow = hWnd;
-                    ignoredWindows.Add(hWnd);
-                }
-
-                Thread.Sleep(10);
-            }
-
-            // This check is to prevent multiple calls of ShowWindow to the same windowHandle
-            if (!settings.StyleSkipedWindows)
-                ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
-
+            ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
 
             SetWindowPos(mainWindow, HWND_TOP, 
                 (int)settings.PlacementData.VirtualWindowPosition.X, (int)settings.PlacementData.VirtualWindowPosition.Y,
                 settings.PlacementData.CX, settings.PlacementData.CY, SWP_NOZORDER);
+        }
+
+        private static IntPtr WaitForMainWindowHandl(ref Process process, uint skipAmountOfWindows) 
+        {
+            var hWnd = IntPtr.Zero;
+
+            // TODO: Create a better way to find the MainWindowHandl even if the Process name is changed
+
+
+            return hWnd;
         }
 
         /// <summary>
