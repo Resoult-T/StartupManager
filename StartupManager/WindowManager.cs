@@ -106,8 +106,10 @@ namespace StartupManager
         /// <param name="processName">The name to search in Processes</param>
         internal static void WaitForWindowAndStyle(ref Process process,ref ExecutableSettings settings)
         {
+            IntPtr mainWindow = ProcessHelper.FindMainWindowHandle(process);
+
             // Wait for Main window handle
-            IntPtr mainWindow = WaitForMainWindowHandl(ref process, settings.SkipAmountOfWindows);
+            //IntPtr mainWindow = WaitForMainWindowHandl(ref process, settings.SkipAmountOfWindows);
 
             // Show window
             ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));

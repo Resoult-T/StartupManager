@@ -40,7 +40,6 @@ namespace StartupManager
             exeManager.PerformStart();
 
 
-
             // Display all running processes
             var processes = Process.GetProcesses();
             var orederedProcesses = from process in processes

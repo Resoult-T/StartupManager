@@ -60,6 +60,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -81,6 +82,7 @@
     </ApplicationDefinition>
     <Compile Include="ExecutableSettings.cs" />
     <Compile Include="MonitorInfo.cs" />
+    <Compile Include="ProcessHelper.cs" />
     <Compile Include="VirtualScreenHelper.cs" />
     <Compile Include="WindowManager.cs" />
     <Compile Include="WindowPlacementData.cs" />
