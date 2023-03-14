@@ -11,7 +11,7 @@ namespace StartupManager
     /// <summary>
     /// Make additionaly changes to Programs using windows APIs.
     /// </summary>
-    static class WindowManager
+    public static class WindowManager
     {
         [DllImport("user32.dll")]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -103,18 +103,16 @@ namespace StartupManager
         /// Waits until the wanted mainWondowHandle was detected ans then aplies the styling.
         /// </summary>
         /// <param name="skipAmountOfWindows">The amount of matches that will be skiped</param>
-        /// <param name="processName">The name to search in Processes</param>
+        /// <param naProcess herachy me="processName">The name to search in Processes</param>
         internal static void WaitForWindowAndStyle(ref Process process,ref ExecutableSettings settings)
         {
-            IntPtr mainWindow = ProcessHelper.FindMainWindowHandle(process);
-
-            // Wait for Main window handle
-            //IntPtr mainWindow = WaitForMainWindowHandl(ref process, settings.SkipAmountOfWindows);
+            // Get the MainWindowHandel to be styled
+            IntPtr mainWindow = ProcessHelper.FindMainWindowHandle(process, ref settings);
 
             // Show window
             ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
 
-            // Style window when enabled
+            // Position window when enabled
             if (settings.CustomPositioning && settings.PlacementData != null)
                 StyleWindow(mainWindow, settings.PlacementData);
         }

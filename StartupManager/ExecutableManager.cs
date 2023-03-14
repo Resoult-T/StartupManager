@@ -14,7 +14,7 @@ namespace StartupManager
     /// <summary>
     /// Provides tools to handle object of type Executable. 
     /// </summary>
-    sealed class ExecutableManager : IEnumerable<Executable>
+    public sealed class ExecutableManager : IEnumerable<Executable>
     {
         //################# Singelton design pettern ###################
         // When an instance is created the saved objects will be automaticly loaded

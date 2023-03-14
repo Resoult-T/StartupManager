@@ -12,7 +12,7 @@ namespace StartupManager
     /// Contains information about the size and position of a window, including virtual positioning.
     /// </summary>
     [Serializable]
-    internal class WindowPlacementData
+    public class WindowPlacementData
     {
         /// <summary>
         /// Screen coordinate from left to right in pixels.

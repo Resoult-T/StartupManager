@@ -11,7 +11,7 @@ namespace StartupManager
     /// Contains all setings for an object type of Executable which are not relatit spezific to an Executable Object and can be reused for others.
     /// </summary>
     [Serializable]
-    internal class ExecutableSettings
+    public class ExecutableSettings
     {
         /// <summary>
         /// A name to identify this preset

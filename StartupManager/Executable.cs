@@ -15,7 +15,7 @@ namespace StartupManager
     /// Contains all information needed to launch a program with a certain behavior.
     /// </summary>
     [Serializable]
-    class Executable
+    public class Executable
     {
         /// <summary>
         /// A unique id for this instace.
