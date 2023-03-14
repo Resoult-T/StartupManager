@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
@@ -50,56 +51,45 @@ namespace StartupManager
             return handle;
         }
 
-        
-        private static HashSet<int> visitedProcessesIds;
+
         private static Process[] GetChildProcesses(Process root)
         {
-            List<Process> childProcesses = new List<Process>();
-            visitedProcessesIds = new HashSet<int>();
+            // Dictionary that stores a PerentProcess with key ChildProcess
+            Dictionary<int, int> parentProcessIds = new Dictionary<int, int>();
+            // Returnees
+            Process[] childProcesses = new Process[allProcesses.Length];
 
-            Console.WriteLine(allProcesses.Length);
             int count = 0;
+
+            // Store the parent process ID for each process in a dictionary
             foreach (Process process in allProcesses)
             {
-                count++;
-                Console.WriteLine(count);
-                if (process.Id != root.Id && IsChildProcess(root, process))
-                {
-                    childProcesses.Add(process);
-                }
+                parentProcessIds[process.Id] = process.ParentProcessId();
+                Console.WriteLine(process.ProcessName);
             }
 
-            return childProcesses.ToArray();
+            // Use a breadth-first search algorithm to find the child processes of the root process
+            Queue<Process> queue = new Queue<Process>();
+            queue.Enqueue(root);
 
-            //var processes = Process.GetProcesses();
-
-            //var childProcesses = from process in processes
-            //                     where process.Id != root.Id && IsChildProcess(root, process)
-            //                     select process;
-
-            //return childProcesses.ToArray();
-        }
-        
-        private static bool IsChildProcess(Process root, Process child)
-        {
-            var parent = child.Parent();
-            while (parent != null)
+            while (queue.Count > 0)
             {
-                if (parent.Id == root.Id)
-                {
-                    return true;
-                }
+                Process current = queue.Dequeue();
 
-                if (!visitedProcessesIds.Add(parent.Id))
+                foreach (Process process in allProcesses)
                 {
-                    return false;
+                    if (process.Id != root.Id && parentProcessIds[process.Id] == current.Id && Array.IndexOf(childProcesses, process, 0, count) < 0)
+                    {
+                        childProcesses[count++] = process;
+                        queue.Enqueue(process);
+                    }
                 }
-
-                parent = parent.Parent();
             }
 
-            return false;
+            Array.Resize(ref childProcesses, count);
+            return childProcesses;
         }
+
 
         private static Process Parent(this Process process)
         {
