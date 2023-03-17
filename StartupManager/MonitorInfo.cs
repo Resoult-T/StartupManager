@@ -13,7 +13,7 @@ namespace StartupManager
     internal class MonitorInfo
     {
         /// <summary>
-        /// Idex of this Monitor.
+        /// Index of this Monitor.
         /// </summary>
         public int Index { get; set; }
         /// <summary>
@@ -21,7 +21,7 @@ namespace StartupManager
         /// </summary>
         public Rect Bounds { get; set; }
         /// <summary>
-        /// Dimensions excluding UI ellements like Taskbar.
+        /// Dimensions excluding UI elements like Taskbar.
         /// </summary>
         public Rect WorkingArea { get; set; }
     }

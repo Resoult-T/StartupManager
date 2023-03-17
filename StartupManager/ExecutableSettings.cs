@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace StartupManager
 {
     /// <summary>
-    /// Contains all setings for an object type of Executable which are not relatit spezific to an Executable Object and can be reused for others.
+    /// Contains all settings for an object type of Executable which are not related specific to an Executable Object and can be reused for others.
     /// </summary>
     [Serializable]
     public class ExecutableSettings
@@ -19,13 +19,13 @@ namespace StartupManager
         public string? Name { get; set; }
 
         /// <summary>
-        /// Defines the process style in wich the the aplication will be started.
+        /// Defines the process style in wich the the application will be started.
         /// </summary>
         public ProcessWindowStyle WindowStyle { get; set; }
 
         /// <summary>
         /// Setting this to true, activates advanced handling to the associated executable.
-        /// It will use further enhanced methodes to applie stylings and adds more features.
+        /// It will use further enhanced methods to apply stylings and adds more features.
         /// </summary>
         public bool AdvancedHandling { get; set; }
 
@@ -42,7 +42,7 @@ namespace StartupManager
         public WindowPlacementData PlacementData { get; set; }
 
         /// <summary>
-        /// Enables custom positioning. This Only works when AdwancedHandling is enabled and PlacementData is set.
+        /// Enables custom positioning. This Only works when AdvancedHandling is enabled and PlacementData is set.
         /// </summary>
         public bool CustomPositioning { get; set; }
     
@@ -61,7 +61,7 @@ namespace StartupManager
         /// <summary>
         /// Define basic settigns.
         /// </summary>
-        /// <param name="arguments">Arguments parsed at aplication start</param>
+        /// <param name="arguments">Arguments parsed at application start</param>
         /// <param name="windowStyle">Window style</param>
         public ExecutableSettings(string? name, ProcessWindowStyle windowStyle)
         {
@@ -73,12 +73,12 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Define advanced settigs.
-        /// This will automaticli activate advancedHandling.
+        /// Define advanced settings.
+        /// This will automatically activate advancedHandling.
         /// </summary>
-        /// <param name="arguments">Arguments parsed at aplication start</param>
+        /// <param name="arguments">Arguments parsed at application start</param>
         /// <param name="windowStyle">Window style</param>
-        /// <param name="skipAmountOfWindows">Windows that will be skiped befor styles are applied</param>
+        /// <param name="skipAmountOfWindows">Windows that will be skipped before styles are applied</param>
         /// <param name="styleSkipedWindows">Defines if the style should also be set to prior windows</param>
         public ExecutableSettings(string? name, ProcessWindowStyle windowStyle, uint skipAmountOfWindows, WindowPlacementData placementData, bool customPositioning)
         {  
