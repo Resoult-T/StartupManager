@@ -42,11 +42,11 @@ namespace StartupManager
 
             // Display all running processes
             var processes = Process.GetProcesses();
-            var orederedProcesses = from process in processes
+            var orderedProcesses = from process in processes
                                     orderby process.ProcessName ascending
                                     select process;
 
-            lbProcesses.ItemsSource = orederedProcesses;
+            lbProcesses.ItemsSource = orderedProcesses;
             lbProcesses.DisplayMemberPath = "ProcessName";
 
         }

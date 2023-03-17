@@ -9,7 +9,7 @@ namespace StartupManager
 {
 
     /// <summary>
-    /// Make additionaly changes to Programs using windows APIs.
+    /// Make additionally changes to Programs using windows APIs.
     /// </summary>
     public static class WindowManager
     {
@@ -56,14 +56,14 @@ namespace StartupManager
             return returnValue;
         }
 
-        // Flags for ShowWindow methode
+        // Flags for ShowWindow method
         const int SW_HIDE = 0;
         const int SW_SHOWNORMAL = 1;
         const int SW_SHOWMINIMIZED = 2;
         const int SW_SHOWMAXIMIZED = 3;
 
 
-        // Flags for SetWindowPos methode
+        // Flags for SetWindowPos method
         static readonly IntPtr HWND_TOP = new IntPtr(0);
         const uint SWP_NOSIZE = 0x0001;
         const uint SWP_NOMOVE = 0x0002;
@@ -100,9 +100,9 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Waits until the wanted mainWondowHandle was detected ans then aplies the styling.
+        /// Waits until the wanted mainWindowHandle was detected ans then applies the styling.
         /// </summary>
-        /// <param name="skipAmountOfWindows">The amount of matches that will be skiped</param>
+        /// <param name="skipAmountOfWindows">The amount of matches that will be skipped</param>
         /// <param naProcess herachy me="processName">The name to search in Processes</param>
         internal static void WaitForWindowAndStyle(ref Process process,ref ExecutableSettings settings)
         {
@@ -117,11 +117,11 @@ namespace StartupManager
                 StyleWindow(mainWindow, settings.PlacementData);
         }
 
-        private static IntPtr WaitForMainWindowHandl(ref Process process, uint skipAmountOfWindows) 
+        private static IntPtr WaitForMainWindowHandle(ref Process process, uint skipAmountOfWindows) 
         {
             var hWnd = IntPtr.Zero;
 
-            // TODO: Create a better way to find the MainWindowHandl even if the Process name is changed
+            // TODO: Create a better way to find the MainWindowHandls even if the Process name is changed
 
 
             return hWnd;

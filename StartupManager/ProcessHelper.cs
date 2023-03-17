@@ -39,7 +39,7 @@ namespace StartupManager
         /// <returns>mainWindowHandle</returns>
         public static IntPtr FindMainWindowHandle(Process process, ref ExecutableSettings settings)
         {
-            // Set this process to the root proces
+            // Set this process to the root process
             var root = Process.GetCurrentProcess();
 
             // Return value
@@ -95,7 +95,7 @@ namespace StartupManager
         /// <summary>
         /// Searches for all child processes of the root process.
         /// </summary>
-        /// <param name="root">The Parent proces</param>
+        /// <param name="root">The Parent process</param>
         /// <returns>Alls child processes related to the given parent process.</returns>
         private static Process[] GetChildProcesses(Process root)
         {
@@ -127,7 +127,7 @@ namespace StartupManager
 
             int count = 0;
 
-            // While queue is not emty...
+            // While queue is not empty...
             while (queue.Count > 0)
             {
                 // Dequeue the next Process. This will define the Parent Process for the next child search
@@ -167,7 +167,7 @@ namespace StartupManager
                 int processBasicInfoSize = Marshal.SizeOf(processBasicInfo);
                 int bytesReturned = 0;
 
-                // Get the handle of the child's proces
+                // Get the handle of the child's process
                 IntPtr hProcess = OpenProcess(ProcessAccessFlags.QueryInformation, false, process.Id);
                 if (hProcess != IntPtr.Zero)
                 {
@@ -176,7 +176,7 @@ namespace StartupManager
                         // Fill the processBasicInfo Struct with data
                         NtQueryInformationProcess(hProcess, 0, ref processBasicInfo, processBasicInfoSize, out bytesReturned);
 
-                        // Get the ParentProcesId from processBasicInfo
+                        // Get the ParentProcessId from processBasicInfo
                         parentProcessId = processBasicInfo.InheritedFromUniqueProcessId.ToInt32();
                     }
                     finally

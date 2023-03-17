@@ -33,12 +33,12 @@ namespace StartupManager
         public int CY { get; set; }
 
         /// <summary>
-        /// Defines the screen on wich the UI parameeters are applied.
+        /// Defines the screen on wich the UI parameter's are applied.
         /// </summary>
         public int ScreenIndex { get; set; }
 
         /// <summary>
-        /// Gets the virtaul Point of the top left Window Position.
+        /// Gets the virtual Point of the top left Window Position.
         /// </summary>
         public Point VirtualWindowPosition
         {
@@ -49,7 +49,7 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Creates an object that contaisn informaton about a windows positioning.
+        /// Creates an object that contains information about a windows positioning.
         /// </summary>
         /// <param name="x">Window placement point in pixels counting from top</param>
         /// <param name="y">Window placement point in pixels counting from left</param>
