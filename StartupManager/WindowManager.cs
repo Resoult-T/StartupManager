@@ -117,16 +117,6 @@ namespace StartupManager
                 StyleWindow(mainWindow, settings.PlacementData);
         }
 
-        private static IntPtr WaitForMainWindowHandle(ref Process process, uint skipAmountOfWindows) 
-        {
-            var hWnd = IntPtr.Zero;
-
-            // TODO: Create a better way to find the MainWindowHandles even if the Process name is changed
-
-
-            return hWnd;
-        }
-
         /// <summary>
         /// Sets the position and size of a window considering the invisible border of some windows
         /// </summary>
