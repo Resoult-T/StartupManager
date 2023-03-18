@@ -107,7 +107,7 @@ namespace StartupManager
         internal static void WaitForWindowAndStyle(ref Process process,ref ExecutableSettings settings)
         {
             // Get the MainWindowHandel to be styled
-            IntPtr mainWindow = ProcessHelper.FindMainWindowHandle(ref process, ref settings);
+            IntPtr mainWindow = ProcessHelper.FindMainWindowHandle(ref settings);
 
             // Show window
             ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
