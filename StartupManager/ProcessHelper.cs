@@ -117,17 +117,11 @@ namespace StartupManager
             // Contains all found child processes related to the root Process
             Process[] childProcesses = new Process[allProcesses.Length];
 
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             // Store the parent process ID for each process ID in a dictionary
             Parallel.ForEach(allProcesses, process =>
             {
                 parentProcessIds[process.Id] = process.ParentProcessId();
             });
-
-            stopwatch.Stop();
-            Console.WriteLine("Time: {0}", stopwatch.ElapsedMilliseconds);
 
             // Use a breadth-first search algorithm to find the child processes of the root process
 
