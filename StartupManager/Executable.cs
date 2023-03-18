@@ -15,10 +15,10 @@ namespace StartupManager
     /// Contains all information needed to launch a program with a certain behavior.
     /// </summary>
     [Serializable]
-    class Executable
+    public class Executable
     {
         /// <summary>
-        /// A unique id for this instace.
+        /// A unique id for this instance.
         /// </summary>
         public int Id { get; private set; }
         /// <summary>
@@ -28,7 +28,7 @@ namespace StartupManager
 
         private string _pathToExe;
         /// <summary>
-        /// Will Set the Path and the name will be sett to the filename without extension automaticly.
+        /// Will Set the Path and the name will be sett to the filename without extension automatically.
         /// </summary>
         public string PathToExe
         {
@@ -49,8 +49,8 @@ namespace StartupManager
         public ExecutableSettings Settings { get; set; }
 
         /// <summary>
-        /// Creates an object representation of an executable programm.
-        /// Argumenrts are optional
+        /// Creates an object representation of an executable program.
+        /// Arguments are optional
         /// </summary>
         /// <param name="path">The path to the executable</param>
         /// <param name="arguments">Additional start arguments that will be parsed to the executable</param>
@@ -64,12 +64,12 @@ namespace StartupManager
 
 
         /// <summary>
-        /// Creates an object representation of an executable programm.
+        /// Creates an object representation of an executable program.
         /// Parameters are optional and the window style must be specified.
         /// </summary>
         /// <param name="path">The path to the executable</param>
         /// <param name="arguments">Additional start arguments that will be parsed to the executable</param>
-        /// <param name="settings">An ExecutableSettings object that defince additional settings</param>
+        /// <param name="settings">An ExecutableSettings object that defines additional settings</param>
         public Executable(string path, string? arguments, ExecutableSettings settings)
         {
             Id = GetNextId();
@@ -81,37 +81,43 @@ namespace StartupManager
 
 
         /// <summary>
-        /// Will run the executable with the specified parameterss.
+        /// Will run the executable with the specified parameters.
         /// </summary>
         /// <returns>A bool which will show if the program start was executed</returns>
         public bool Run()
         {
+            var settings = Settings;
+            var process = new Process();
             try
             {
-                using (var process = new Process())
-                {
-                    process.StartInfo.FileName = PathToExe;
-                    process.StartInfo.Arguments = Arguments;
-                    process.StartInfo.RedirectStandardInput = false;
-                    process.StartInfo.RedirectStandardOutput = false;
-                    process.StartInfo.RedirectStandardError = false;
-                    process.StartInfo.UseShellExecute = true;
-                    process.StartInfo.WindowStyle = Settings.WindowStyle;
-                    process.StartInfo.CreateNoWindow = false;
-                    process.Start();
-                }
+                process.StartInfo.FileName = PathToExe;
+                process.StartInfo.Arguments = Arguments;
+                process.StartInfo.RedirectStandardInput = false;
+                process.StartInfo.RedirectStandardOutput = false;
+                process.StartInfo.RedirectStandardError = false;
+                process.StartInfo.UseShellExecute = true;
+                process.StartInfo.WindowStyle = settings.WindowStyle;
+                process.StartInfo.CreateNoWindow = false;
+                process.Start();
+
                 if (Settings.AdvancedHandling)
                 {
                     // Successively try to style th window
-                    WindowManager.WaitForWindowAndStyle(Name, Settings);
+                    WindowManager.WaitForWindowAndStyle(ref process, ref settings);
                 }
-
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 return false;
+            }
+            finally
+            {
+                if (!process.HasExited)
+                {
+                    process.Dispose();
+                }
             }
             return true;
         }

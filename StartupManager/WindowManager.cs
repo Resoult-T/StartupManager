@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Windows;
+using static StartupManager.VirtualScreenHelper;
 using System.Drawing;
 using System.Linq;
 using System.Diagnostics.Contracts;
@@ -17,9 +18,9 @@ namespace StartupManager
 {
 
     /// <summary>
-    /// Make additionaly changes to Programs using windows APIs.
+    /// Make additionally changes to Programs using windows APIs.
     /// </summary>
-    static class WindowManager
+    public static class WindowManager
     {
         [DllImport("user32.dll")]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -64,14 +65,15 @@ namespace StartupManager
             return returnValue;
         }
 
-        // Flags for ShowWindow methode
+        // Flags for ShowWindow method
         const int SW_HIDE = 0;
         const int SW_SHOWNORMAL = 1;
         const int SW_SHOWMINIMIZED = 2;
         const int SW_SHOWMAXIMIZED = 3;
 
 
-        // Flags for SetWindowPos methode
+
+        // Flags for SetWindowPos method
         static readonly IntPtr HWND_TOP = new IntPtr(0);
         const uint SWP_NOSIZE = 0x0001;
         const uint SWP_NOMOVE = 0x0002;
@@ -108,56 +110,60 @@ namespace StartupManager
         }
 
         /// <summary>
-        /// Waits until the wanted mainWondowHandle was detected ans then aplies the styling.
+        /// Waits until the wanted mainWindowHandle was detected ans then applies the styling.
         /// </summary>
-        /// <param name="skipAmountOfWindows">The amount of matches that will be skiped</param>
-        /// <param name="processName">The name to search in Processes</param>
-        internal static void WaitForWindowAndStyle(string processName, ExecutableSettings settings)
+        /// <param name="skipAmountOfWindows">The amount of matches that will be skipped</param>
+        /// <param naProcess herachy me="processName">The name to search in Processes</param>
+        internal static void WaitForWindowAndStyle(ref Process process,ref ExecutableSettings settings)
         {
-            IntPtr mainWindow = IntPtr.Zero;
+            // Get the MainWindowHandel to be styled
+            IntPtr mainWindow = ProcessHelper.FindMainWindowHandle(ref settings);
 
-            // A list of all matches found
-            List<IntPtr> ignoredWindows = new List<IntPtr>();
+            // Show window
+            ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
 
-            // While no mailWindowHandle was fount or the amount of already found mainWindowHandle is below the skiped value...
-            while (mainWindow == IntPtr.Zero || ignoredWindows.Count <= settings.SkipAmountOfWindows)
-            {
-                // Get all current processes
-                Process[] processes = Process.GetProcesses();
-
-                // Select all processes that matches the procesName case insensitive
-                var thisProcess = from process in processes
-                                  where process.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)
-                                  select process;
-
-                foreach (var process in thisProcess )
-                {
-                    IntPtr hWnd = process.MainWindowHandle;
-                    // Continue if the current process does not have a mainWindowHandle
-                    if (hWnd == IntPtr.Zero)
-                        continue;
-                    // Continue if the current handle was already found
-                    else if (ignoredWindows.Contains(hWnd))
-                        continue;
-
-                    // Style this window if enabled
-                    if (settings.StyleSkipedWindows)
-                        ShowWindow(hWnd, GetStyleFlag(settings.WindowStyle));
-
-                    mainWindow = hWnd;
-                    ignoredWindows.Add(hWnd);
-                }
-
-                Thread.Sleep(10);
-            }
-
-            // This check is to prevent multiple calls of ShowWindow to the same windowHandle
-            if (!settings.StyleSkipedWindows)
-                ShowWindow(mainWindow, GetStyleFlag(settings.WindowStyle));
-
-
-            StyleWindow(mainWindow, settings.PlacementData);
+            // Position window when enabled
+            if (settings.CustomPositioning && settings.PlacementData != null)
+                StyleWindow(mainWindow, settings.PlacementData);
         }
+
+        /// <summary>
+        /// Sets the position and size of a window considering the invisible border of some windows
+        /// </summary>
+        /// <param name="hWnd">MainWindowHandle</param>
+        /// <param name="placementData"></param>
+        private static void StyleWindow(IntPtr hWnd, WindowPlacementData placementData)
+        {
+            // TODO:(Compleeded) Get information about the margin/border of this window and substrakt is from the VirtualWindowPosition.
+
+            // Get the window's position and size
+            RECT windowRect = new RECT();
+            GetWindowRect(hWnd, out windowRect);
+
+            // Get the window's client area size
+            RECT clientRect = new RECT();
+            GetClientRect(hWnd, out clientRect);
+
+            // Calculate the size of the window's border
+            int borderWidth = ((windowRect.Right - windowRect.Left) - (clientRect.Right - clientRect.Left));
+            // Correction value to subtract from X positioning value
+            int xCorrection;
+            if (borderWidth > 1)
+                // The correction value results from a single edge width minus 2. The reason for this is unknown
+                xCorrection = (borderWidth/2) - 2;
+            else
+                // If no boder is present, the correction value must not fall below 0
+                xCorrection = 0;
+
+            // Set window position
+            SetWindowPos(hWnd, HWND_TOP,
+                (int)placementData.VirtualWindowPosition.X - xCorrection, 
+                (int)placementData.VirtualWindowPosition.Y,
+                placementData.CX + borderWidth, 
+                placementData.CY + (borderWidth / 2), 
+                SWP_NOZORDER);
+        }
+
 
         /// <summary>
         /// Sets the position and size of a window considering the invisible border of some windows

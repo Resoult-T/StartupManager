@@ -14,10 +14,10 @@ namespace StartupManager
     /// <summary>
     /// Provides tools to handle object of type Executable. 
     /// </summary>
-    sealed class ExecutableManager : IEnumerable<Executable>
+    public sealed class ExecutableManager : IEnumerable<Executable>
     {
-        //################# Singelton design pettern ###################
-        // When an instance is created the saved objects will be automaticly loaded
+        //################# Singleton design pattern ###################
+        // When an instance is created the saved objects will be automatically loaded
         private ExecutableManager() { Executables = new List<Executable>(); Load(); }
 
         private static ExecutableManager _instance;
@@ -43,7 +43,7 @@ namespace StartupManager
             return _instance;
         }
 
-        //################# Singelton design pettern ###################
+        //################# Singleton design pattern ###################
 
         private string _savedExecutablePath = "executable.smso";
 
@@ -98,6 +98,8 @@ namespace StartupManager
         /// </summary>
         public void PerformStart()
         {
+            
+
             foreach (Executable exe in Executables)
             {
                 exe.Run();
@@ -126,7 +128,8 @@ namespace StartupManager
 
         /// <summary>
         /// Saves all executable objects added to the manager.
-        /// This methode will be called automaticly when this instance is out of scope. Normaly there is not need to call this methode manualy.
+        /// This method will be called automatically when this instance is out of scope. 
+        /// Usually there is no need to call this method manually.
         /// </summary>
         public void Save()
         {
