@@ -31,13 +31,16 @@ namespace StartupManager
         // The only instance of a list with all processes
         private static Process[] allProcesses;
 
+        // This list contains all found child processes that should be ignored during the next run
+        static List<IntPtr> previouslyFoundHandles = new List<IntPtr>();
+
         /// <summary>
         /// Finds the mainWindowHandle of the passed process
         /// </summary>
         /// <param name="process"></param>
         /// <param name="settings"></param>
         /// <returns>mainWindowHandle</returns>
-        public static IntPtr FindMainWindowHandle(Process process, ref ExecutableSettings settings)
+        public static IntPtr FindMainWindowHandle(ref Process process, ref ExecutableSettings settings)
         {
             // Set this process to the root process
             var root = Process.GetCurrentProcess();
@@ -74,6 +77,11 @@ namespace StartupManager
 
                     if (hWnd != IntPtr.Zero)
                     {
+                        // Skip if this handle was in previously iterations
+                        if (previouslyFoundHandles.Contains(hWnd))
+                            continue;
+
+                        // Skip if this handle was already in the current loop
                         if (foundWindowHandles.Contains(hWnd))
                             continue;
 
@@ -89,6 +97,10 @@ namespace StartupManager
                 }
             }
 
+            // Add all handles to a static list to provide it in the next round
+            foreach (var hWnd in foundWindowHandles)
+                previouslyFoundHandles.Add(hWnd);
+
             return handle;
         }
 
@@ -96,13 +108,13 @@ namespace StartupManager
         /// Searches for all child processes of the root process.
         /// </summary>
         /// <param name="root">The Parent process</param>
-        /// <returns>Alls child processes related to the given parent process.</returns>
+        /// <returns>All child processes related to the given parent process.</returns>
         private static Process[] GetChildProcesses(Process root)
         {
 
-            // Dictionary that stores a PerentProcess with key ChildProcess
+            // Dictionary that stores a ParentProcess with key ChildProcess
             ConcurrentDictionary<int, int> parentProcessIds = new ConcurrentDictionary<int, int>();
-            // Contains all found child proceses related to the root Process
+            // Contains all found child processes related to the root Process
             Process[] childProcesses = new Process[allProcesses.Length];
 
 
@@ -122,7 +134,7 @@ namespace StartupManager
             // All object in this queue are under the Parent(root) Process
             Queue<Process> queue = new Queue<Process>();
 
-            // Set root as the dirst Parent to search for child processes
+            // Set root as the first Parent to search for child processes
             queue.Enqueue(root);
 
             int count = 0;
@@ -136,7 +148,7 @@ namespace StartupManager
                 // Check all available Processes... 
                 foreach (Process process in allProcesses)
                 {
-                    // If the Parent of the current Process is the same as the current Parent and the Proces is not already in childProcesses...
+                    // If the Parent of the current Process is the same as the current Parent and the Process is not already in childProcesses...
                     if (process.Id != root.Id && parentProcessIds[process.Id] == current.Id && Array.IndexOf(childProcesses, process, 0, count) < 0)
                     {
                         // Add this Process to childProcesses and Queue it to be the next Parent
@@ -146,7 +158,7 @@ namespace StartupManager
                 }
             }
 
-            // Rezise the childProcesses array and return it
+            // Resize the childProcesses array and return it
             Array.Resize(ref childProcesses, count);
             return childProcesses;
         }

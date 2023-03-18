@@ -29,12 +29,16 @@ namespace StartupManager
             InitializeComponent();
 
             // Create a Test Setting
-            var settings = new ExecutableSettings("Test", ProcessWindowStyle.Normal, 0, new WindowPlacementData(0, 0, 700, 400, 0), true);
+            var settings = new ExecutableSettings("Notepad", ProcessWindowStyle.Normal, 0, new WindowPlacementData(0, 0, 1000, 600, 0), true);
+            var settings2 = new ExecutableSettings("Outlook", ProcessWindowStyle.Normal, 1, new WindowPlacementData(0, 600, 1000, 600, 0), true);
+            var settings3 = new ExecutableSettings("RockstarGames", ProcessWindowStyle.Normal, 1, new WindowPlacementData(0, 600, 1000, 600, 0), true);
 
             var exeManager = ExecutableManager.Instance();
 
             // Adding a new Executable to the manager
             exeManager.AddExe(new Executable("notepad.exe", null, settings));
+            //exeManager.AddExe(new Executable("outlook.exe", null, settings2));
+            exeManager.AddExe(new Executable("C:\\Program Files\\Rockstar Games\\Launcher\\LauncherPatcher.exe", null, settings3));
 
             // Perform start
             exeManager.PerformStart();

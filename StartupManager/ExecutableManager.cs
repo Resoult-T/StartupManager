@@ -98,6 +98,8 @@ namespace StartupManager
         /// </summary>
         public void PerformStart()
         {
+            
+
             foreach (Executable exe in Executables)
             {
                 exe.Run();

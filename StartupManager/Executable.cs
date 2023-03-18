@@ -116,7 +116,6 @@ namespace StartupManager
             {
                 if (!process.HasExited)
                 {
-                    process.WaitForExit();
                     process.Dispose();
                 }
             }
