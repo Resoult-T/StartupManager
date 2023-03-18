@@ -35,12 +35,12 @@ namespace StartupManager
         static List<IntPtr> previouslyFoundHandles = new List<IntPtr>();
 
         /// <summary>
-        /// Finds the mainWindowHandle of the passed process
+        /// Finds the mainWindowHandle of the next process that is startign. The parsed settings wil be applied.
         /// </summary>
         /// <param name="process"></param>
         /// <param name="settings"></param>
         /// <returns>mainWindowHandle</returns>
-        public static IntPtr FindMainWindowHandle(ref Process process, ref ExecutableSettings settings)
+        public static IntPtr FindMainWindowHandle(ref ExecutableSettings settings)
         {
             // Set this process to the root process
             var root = Process.GetCurrentProcess();
