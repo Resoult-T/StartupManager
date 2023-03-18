@@ -4,6 +4,15 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using static StartupManager.VirtualScreenHelper;
+using System.Drawing;
+using System.Linq;
+using System.Diagnostics.Contracts;
+using System.Windows.Documents;
+using System.Collections.Generic;
+using System.Security.RightsManagement;
+using System.Threading;
+using static StartupManager.VirtualScreenHelper;
+using System.Windows.Media.Media3D;
 
 namespace StartupManager
 {
@@ -63,6 +72,7 @@ namespace StartupManager
         const int SW_SHOWMAXIMIZED = 3;
 
 
+
         // Flags for SetWindowPos method
         static readonly IntPtr HWND_TOP = new IntPtr(0);
         const uint SWP_NOSIZE = 0x0001;
@@ -116,6 +126,44 @@ namespace StartupManager
             if (settings.CustomPositioning && settings.PlacementData != null)
                 StyleWindow(mainWindow, settings.PlacementData);
         }
+
+        /// <summary>
+        /// Sets the position and size of a window considering the invisible border of some windows
+        /// </summary>
+        /// <param name="hWnd">MainWindowHandle</param>
+        /// <param name="placementData"></param>
+        private static void StyleWindow(IntPtr hWnd, WindowPlacementData placementData)
+        {
+            // TODO:(Compleeded) Get information about the margin/border of this window and substrakt is from the VirtualWindowPosition.
+
+            // Get the window's position and size
+            RECT windowRect = new RECT();
+            GetWindowRect(hWnd, out windowRect);
+
+            // Get the window's client area size
+            RECT clientRect = new RECT();
+            GetClientRect(hWnd, out clientRect);
+
+            // Calculate the size of the window's border
+            int borderWidth = ((windowRect.Right - windowRect.Left) - (clientRect.Right - clientRect.Left));
+            // Correction value to subtract from X positioning value
+            int xCorrection;
+            if (borderWidth > 1)
+                // The correction value results from a single edge width minus 2. The reason for this is unknown
+                xCorrection = (borderWidth/2) - 2;
+            else
+                // If no boder is present, the correction value must not fall below 0
+                xCorrection = 0;
+
+            // Set window position
+            SetWindowPos(hWnd, HWND_TOP,
+                (int)placementData.VirtualWindowPosition.X - xCorrection, 
+                (int)placementData.VirtualWindowPosition.Y,
+                placementData.CX + borderWidth, 
+                placementData.CY + (borderWidth / 2), 
+                SWP_NOZORDER);
+        }
+
 
         /// <summary>
         /// Sets the position and size of a window considering the invisible border of some windows
