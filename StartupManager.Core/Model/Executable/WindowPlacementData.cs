@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Drawing;
+using StartupManager.Core.Model.WindowPlacement;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.Executable
 {
 
     /// <summary>
@@ -79,7 +81,7 @@ namespace StartupManager
             if (monitorInfo.Length < ScreenIndex + 1)
                 screenNumber = 0;
 
-            var origin = monitorInfo[screenNumber].Bounds.TopLeft;
+            var origin = monitorInfo[screenNumber].Bounds.Location;
 
             origin.X += this.X;
             origin.Y += this.Y;

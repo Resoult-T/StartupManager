@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Linq;
-using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using StartupManager.Core.Model.Executable;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.ProcessTracking
 {
     public static class ProcessHelper
     {

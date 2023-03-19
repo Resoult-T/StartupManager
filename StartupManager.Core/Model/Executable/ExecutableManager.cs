@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.Executable
 {
     /// <summary>
     /// Provides tools to handle object of type Executable. 
@@ -45,14 +45,12 @@ namespace StartupManager
 
         //################# Singleton design pattern ###################
 
-        private string _savedExecutablePath = "executable.smso";
-
         /// <summary>
         /// This list contains all executables that will be runned on Startup.
         /// </summary>
         public List<Executable> Executables { get; private set; }
 
-        public void AddExe(params Executable[] executables)
+        public void AddExe(Executable[] executables)
         {
 
             var existingPaths = from exe in Executables
@@ -113,11 +111,11 @@ namespace StartupManager
         private void Load()
         {
             // If the file does not exists yet, return
-            if (!File.Exists(_savedExecutablePath)) return;
+            if (!File.Exists(getPathToSave())) return;
 
             // DeSerialize all saved Object information
             var formatter = new BinaryFormatter();
-            using (var stream = new FileStream(_savedExecutablePath, FileMode.Open))
+            using (var stream = new FileStream(getPathToSave(), FileMode.Open))
             {
                 // Will load the next id to ensure no dublicates
                 Executable.nextId = (int)formatter.Deserialize(stream);
@@ -135,7 +133,7 @@ namespace StartupManager
         {
             // Serialize curently loaded objects
             var formatter = new BinaryFormatter();
-            using (var stream = new FileStream(_savedExecutablePath, FileMode.Create))
+            using (var stream = new FileStream(getPathToSave(), FileMode.Create))
             {
                 // Serialize the nextId that it can be restored afterwarts
                 formatter.Serialize(stream, Executable.nextId);
@@ -144,6 +142,12 @@ namespace StartupManager
             }
         }
 
+        public string getPathToSave()
+        {
+            string fileName = "executable.smso";
+            string outputDirectory = AppDomain.CurrentDomain.BaseDirectory; // Gibt das Ausführungsverzeichnis der Hauptanwendung zurück
+            return Path.Combine(outputDirectory, fileName);
+        }
 
         public override string ToString()
         {
