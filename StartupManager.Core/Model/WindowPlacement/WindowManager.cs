@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
-using static StartupManager.VirtualScreenHelper;
 using System.Drawing;
 using System.Linq;
 using System.Diagnostics.Contracts;
-using System.Windows.Documents;
 using System.Collections.Generic;
-using System.Security.RightsManagement;
 using System.Threading;
-using static StartupManager.VirtualScreenHelper;
-using System.Windows.Media.Media3D;
+using StartupManager.Core.Model.Executable;
+using StartupManager.Core.Model.ProcessTracking;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.WindowPlacement
 {
 
     /// <summary>
@@ -32,10 +29,10 @@ namespace StartupManager
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
-        static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+        static extern bool GetWindowRect(IntPtr hwnd, out VirtualScreenHelper.RECT rect);
 
         [DllImport("user32.dll")]
-        static extern bool GetClientRect(IntPtr hwnd, out RECT rect);
+        static extern bool GetClientRect(IntPtr hwnd, out VirtualScreenHelper.RECT rect);
 
         /// <summary>
         /// Returns the First MainWindowHandle that is found. If there was no MainWindowHandle it will return IntPtr.Zero.
@@ -60,7 +57,7 @@ namespace StartupManager
 
             // [Debugging] Show if the return value is still IntPtr.Zero
             if (returnValue == IntPtr.Zero)
-                MessageBox.Show("None of the specified processes had a mainWindowHandle");
+                Debug.WriteLine("WindowManager.getMainWindowHandle(): None of the specified processes had a mainWindowHandle");
 
             return returnValue;
         }
@@ -134,52 +131,14 @@ namespace StartupManager
         /// <param name="placementData"></param>
         private static void StyleWindow(IntPtr hWnd, WindowPlacementData placementData)
         {
-            // TODO:(Compleeded) Get information about the margin/border of this window and substrakt is from the VirtualWindowPosition.
+            // TODO:(Completed) Get information about the margin/border of this window and substract is from the VirtualWindowPosition.
 
             // Get the window's position and size
-            RECT windowRect = new RECT();
+            VirtualScreenHelper.RECT windowRect = new VirtualScreenHelper.RECT();
             GetWindowRect(hWnd, out windowRect);
 
             // Get the window's client area size
-            RECT clientRect = new RECT();
-            GetClientRect(hWnd, out clientRect);
-
-            // Calculate the size of the window's border
-            int borderWidth = ((windowRect.Right - windowRect.Left) - (clientRect.Right - clientRect.Left));
-            // Correction value to subtract from X positioning value
-            int xCorrection;
-            if (borderWidth > 1)
-                // The correction value results from a single edge width minus 2. The reason for this is unknown
-                xCorrection = (borderWidth/2) - 2;
-            else
-                // If no boder is present, the correction value must not fall below 0
-                xCorrection = 0;
-
-            // Set window position
-            SetWindowPos(hWnd, HWND_TOP,
-                (int)placementData.VirtualWindowPosition.X - xCorrection, 
-                (int)placementData.VirtualWindowPosition.Y,
-                placementData.CX + borderWidth, 
-                placementData.CY + (borderWidth / 2), 
-                SWP_NOZORDER);
-        }
-
-
-        /// <summary>
-        /// Sets the position and size of a window considering the invisible border of some windows
-        /// </summary>
-        /// <param name="hWnd">MainWindowHandle</param>
-        /// <param name="placementData"></param>
-        private static void StyleWindow(IntPtr hWnd, WindowPlacementData placementData)
-        {
-            // TODO: Get information about the margin/border of this window and substrakt is from the VirtualWindowPosition.
-
-            // Get the window's position and size
-            RECT windowRect = new RECT();
-            GetWindowRect(hWnd, out windowRect);
-
-            // Get the window's client area size
-            RECT clientRect = new RECT();
+            VirtualScreenHelper.RECT clientRect = new VirtualScreenHelper.RECT();
             GetClientRect(hWnd, out clientRect);
 
             // Calculate the size of the window's border

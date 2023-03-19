@@ -6,10 +6,10 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Runtime.Remoting.Lifetime;
 using System.Threading;
+using StartupManager.Core.Model.WindowPlacement;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.Executable
 {
     /// <summary>
     /// Contains all information needed to launch a program with a certain behavior.
@@ -109,7 +109,7 @@ namespace StartupManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Debug.WriteLine("Executable.Run(): {0}", ex.Message);
                 return false;
             }
             finally

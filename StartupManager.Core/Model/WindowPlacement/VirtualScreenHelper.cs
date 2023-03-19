@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.WindowPlacement
 {
     internal class VirtualScreenHelper
     {
@@ -52,10 +53,10 @@ namespace StartupManager
                 if (GetMonitorInfo(hMonitor, ref monitorInfoEx))
                 {
                     monitorInfo.Index = monitorInfoList.Count;
-                    monitorInfo.Bounds = new Rect(monitorInfoEx.rcMonitor.Left, monitorInfoEx.rcMonitor.Top,
+                    monitorInfo.Bounds = new Rectangle(monitorInfoEx.rcMonitor.Left, monitorInfoEx.rcMonitor.Top,
                         monitorInfoEx.rcMonitor.Right - monitorInfoEx.rcMonitor.Left,
                         monitorInfoEx.rcMonitor.Bottom - monitorInfoEx.rcMonitor.Top);
-                    monitorInfo.WorkingArea = new Rect(monitorInfoEx.rcWork.Left, monitorInfoEx.rcWork.Top,
+                    monitorInfo.WorkingArea = new Rectangle(monitorInfoEx.rcWork.Left, monitorInfoEx.rcWork.Top,
                         monitorInfoEx.rcWork.Right - monitorInfoEx.rcWork.Left,
                         monitorInfoEx.rcWork.Bottom - monitorInfoEx.rcWork.Top);
                     monitorInfoList.Add(monitorInfo);

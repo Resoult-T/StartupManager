@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
-namespace StartupManager
+namespace StartupManager.Core.Model.Executable
 {
     /// <summary>
     /// Contains all settings for an object type of Executable which are not related specific to an Executable Object and can be reused for others.
@@ -76,10 +76,11 @@ namespace StartupManager
         /// Define advanced settings.
         /// This will automatically activate advancedHandling.
         /// </summary>
-        /// <param name="arguments">Arguments parsed at application start</param>
+        /// <param name="name"></param>
         /// <param name="windowStyle">Window style</param>
         /// <param name="skipAmountOfWindows">Windows that will be skipped before styles are applied</param>
-        /// <param name="styleSkipedWindows">Defines if the style should also be set to prior windows</param>
+        /// <param name="placementData">Defining where the window should be placed</param>
+        /// <param name="customPositioning"></param>
         public ExecutableSettings(string? name, ProcessWindowStyle windowStyle, uint skipAmountOfWindows, WindowPlacementData placementData, bool customPositioning)
         {  
             Name = name;
